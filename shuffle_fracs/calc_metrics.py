@@ -27,23 +27,6 @@ def calc_rmse(true, pred):
 def calc_mae(true, pred):
     return mean_absolute_error(true, pred)
 
-def calc_mape(true, pred):
-    return mean_absolute_percentage_error(true, pred)
-
-def calc_mape(true, pred):
-    true, pred = np.array(true), np.array(pred)
-    return np.mean(np.abs((true - pred) / true)) * 100
-
-def calc_rse(true, pred):
-    rse_numerator = np.sum((true - pred)**2)
-    rse_denominator = np.sum((true - true.mean())**2)
-    return rse_numerator / rse_denominator
-
-def calc_rae(true, pred):
-    rae_numerator = np.sum(np.abs(true - pred))
-    rae_denominator = np.sum(np.abs(true - true.mean()))
-    return rae_numerator / rae_denominator
-
 def calc_all(true, pred):
     #Pred. vs true correlation and p-value
     r, r_p = calc_r(true, pred)
@@ -57,16 +40,7 @@ def calc_all(true, pred):
     #MAE
     mae = calc_mae(true, pred)
 
-    #MAPE (mean absolute percentage error)
-    #mape = calc_mape(true, pred)
-
-    #RSE (relative squared error, how much the prediction errors differ from the standard deviation of the true age)
-    rse = calc_rse(true, pred)
-
-    #RSE (relative absolute error)
-    rae = calc_rae(true, pred)
-
-    return r, r2, rmse, mae, rse, rae
+    return r, r2, rmse, mae
 
 
 def calc_metrics(dataset, poly_order, model, shuffle_frac):
@@ -98,10 +72,8 @@ def calc_metrics(dataset, poly_order, model, shuffle_frac):
     corr = ["","_corr"]
     for c in corr:
 
-
         #################
         #Plot the predicted vs. true
-
         fig, ax = plt.subplots(figsize=(8,8))
 
         plt.scatter(data['Age'],data[f'pred{c}'],s=4,color='#2166ac')
@@ -141,68 +113,17 @@ def calc_metrics(dataset, poly_order, model, shuffle_frac):
                    "top":0.87
                     }
         fig.subplots_adjust(**margins)
-        #plt.tight_layout()
-
-        #fig.savefig(f'../plots/True_vs_Pred_Age_shuffle_frac_{dataset}_{shuffle_frac}{c}.pdf')
         fig.savefig(f'../plots/True_vs_Pred_Age_SF_{dataset}_{shuffle_frac}{c}_poly_{poly_order}{model_name}.jpg')
 
 
 
-        #################
-
-        #BAG vs. true
-        fig, ax = plt.subplots(figsize=(8,8))
-
-        data[f'BAG{c}'] = data[f'pred{c}'] - data['Age']
-        plt.scatter(data['Age'],data[f'BAG{c}'],s=4,color='#2166ac')
-
-        xmin = data['Age'].min()*0.95
-        xmax = data['Age'].max()*1.05
-
-        ymin = data['BAG'].min()*0.95
-        ymax = data['BAG'].max()*1.05
-
-        plt.xlim(xmin,xmax)
-        plt.ylim(ymin,ymax)
-        plt.xlabel("True age",fontsize=65,labelpad=10)
-        if(c==""):
-            prefix = ""
-        else:
-            prefix = "Corr. "
-        plt.ylabel(f"{prefix}Delta",fontsize=65,labelpad=12)
-        if(shuffle_frac=="none"):
-            shuffle_frac_title = 0
-        else:
-            shuffle_frac_title = shuffle_frac
-        plt.title(f"SF = {shuffle_frac_title}",fontsize=60, pad=12)
-
-        plt.axhline(y=0,color='k',linestyle='--',alpha=0.5,linewidth=2)
-
-        ax.tick_params(axis='both', which='major', labelsize=50)
-        #plt.tight_layout()
-
-        margins = {"left":0.30,
-                   "bottom":0.22,
-                   "right":0.97,
-                   "top":0.87
-                    }
-        fig.subplots_adjust(**margins)
-
-        #fig.savefig(f'../plots/True_vs_Pred_Age_shuffle_frac_{dataset}_{shuffle_frac}{c}.pdf')
-        fig.savefig(f'../plots/True_vs_BAG_SF_{dataset}_{shuffle_frac}{c}_poly_{poly_order}{model_name}.jpg')
-
-
         #Default results
-        r, r2, rmse, mae, rse, rae = calc_all(data['Age'],data[f'pred{c}'])
+        r, r2, rmse, mae = calc_all(data['Age'],data[f'pred{c}'])
 
         metric_dict[f"r{c}"] = r
-        #metric_dict[f"r_p{c}"] = r_p
         metric_dict[f"r2{c}"] = r2
         metric_dict[f"RMSE{c}"] = rmse
         metric_dict[f"MAE{c}"] = mae
-        #metric_dict[f"MAPE{c}"] = mape
-        metric_dict[f"RSE{c}"] = rse
-        metric_dict[f"RAE{c}"] = rae
 
         #Bootstrapping to get errors for each metric
         bs_vals = {}
@@ -210,16 +131,14 @@ def calc_metrics(dataset, poly_order, model, shuffle_frac):
             bs_vals[m] = []
         for i in range(0,200):
             data_bs = data.sample(frac=1, replace=True)
-            r, r2, rmse, mae, rse, rae = calc_all(data_bs['Age'],data_bs[f'pred{c}'])
+            r, r2, rmse, mae = calc_all(data_bs['Age'],data_bs[f'pred{c}'])
 
             bs_vals["r"].append(r)
             bs_vals["r2"].append(r2)
             bs_vals["RMSE"].append(rmse)
             bs_vals["MAE"].append(mae)
-            bs_vals["RSE"].append(rse)
-            bs_vals["RAE"].append(rae)
 
-        for m in ["r","r2","RMSE","MAE","RSE","RAE"]:
+        for m in ["r","r2","RMSE","MAE"]:
             metric_dict[f"{m}{c}_err"] = np.std(bs_vals[m])
 
         #Size of dataset

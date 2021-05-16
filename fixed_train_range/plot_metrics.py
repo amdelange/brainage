@@ -64,7 +64,6 @@ def plot(dataset,model,agerange,corr):
             results_dict[a] = json.load(f)
 
     #Loop over metrics
-    #fig, ax = plt.subplots(4,2, figsize=(20,20))
     fig, ax = plt.subplots(2,2, figsize=(18,16))
     ax = ax.ravel()
 
@@ -94,8 +93,7 @@ def plot(dataset,model,agerange,corr):
         label = ""
         corr_label = ""
         if(ax_i==0):
-            #lab = "models (N = %.0f)" % results_dict[str(age_lims[agerange][dataset][-1])]["n"]
-            lab = "models (N = 10,000)"
+            lab = "models (N = %.0f)" % results_dict[str(age_lims[agerange][dataset][-1])]["n"]
             label = "Age range "+lab
             corr_label = "Corr. age range "+lab
         #Reverse values
@@ -113,8 +111,7 @@ def plot(dataset,model,agerange,corr):
         line_label = ""
         corr_line_label = ""
         if(ax_i==0):
-            #line_lab = "model (N = %.0f)" % results_dict[str(age_lims[agerange][dataset][0])]["n"]
-            line_lab = "model (N = 10,000)"
+            line_lab = "model (N = %.0f)" % results_dict[str(age_lims[agerange][dataset][0])]["n"]
             line_label = "Full "+line_lab
             corr_line_label = "Corr. full "+line_lab
         #ax[ax_i].axhline(results_dict["all"][m],color="crimson",alpha=0.5,linestyle='--',linewidth=2.5,label=line_label)

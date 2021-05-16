@@ -54,7 +54,7 @@ def run_model(dataset, model, agerange, age):
         x = x.drop("Sex_cat",1)
 
 
-    # configure the cross-validation procedure
+    # configure the cross-validation procedure for checking parameters with nested cv
     cv_inner = KFold(n_splits=5, shuffle=True, random_state=42)
     cv_outer = KFold(n_splits=10, shuffle=True, random_state=42)
 
@@ -70,6 +70,7 @@ def run_model(dataset, model, agerange, age):
         max_depth = reg_params[dataset]['max_depth'], n_estimators = reg_params[dataset]['n_estimators'], verbose = True, random_state=42)
 
         '''
+        #### For parameter search with nested cv, run:
         # define search space
         parameters = {'max_depth': range (2, 10, 1),
                     'n_estimators': range(60, 220, 40),
@@ -81,7 +82,7 @@ def run_model(dataset, model, agerange, age):
             param_distributions=parameters,
             scoring = 'neg_root_mean_squared_error',
             n_jobs = 4,
-            cv = 5,
+            cv = cv_inner,
             refit=True)
 
     result = search.fit(x, y)
@@ -92,7 +93,6 @@ def run_model(dataset, model, agerange, age):
     best_params = result.best_params_
     print (best_params)
     '''
-
 
     if(model=="SVR"):
 
@@ -107,7 +107,7 @@ def run_model(dataset, model, agerange, age):
             param_distributions=parameters,
             scoring = 'neg_root_mean_squared_error',
             n_jobs = 4,
-            cv = 5,
+            cv = cv_inner,
             refit=True)
 
     result = search.fit(x, y)
@@ -121,9 +121,9 @@ def run_model(dataset, model, agerange, age):
 
     '''
     # run cross val predict with search to get predicition for everyone, with n_cv and n_jobs defined in the reg_params.py script
+    pred = cross_val_predict(M, x, y, cv=reg_params[dataset]['n_cv'], n_jobs=reg_params[dataset]['n_jobs'])
+    #### To get predictions based on nested CV, run:
     #pred = cross_val_predict(search, x, y, cv=cv_outer, n_jobs=reg_params['n_jobs'])
-    pred = cross_val_predict(M, x, y, cv=10, n_jobs=reg_params[dataset]['n_jobs'])
-
 
     #Add predictions to the dataframe
     data['pred'] = pred

@@ -60,28 +60,19 @@ def run_model(dataset,model,shuffle_frac):
     scaler = RobustScaler()
     x_scaled = scaler.fit_transform(x)
 
-    # configure the cross-validation procedure
-    cv_inner = KFold(n_splits=5, shuffle=True, random_state=42)
-    cv_outer = KFold(n_splits=10, shuffle=True, random_state=42)
 
-
-    # define the model
+    # define model
     if(model=="XGB"):
-        # define the model
-        #xg_reg = xgb.XGBRegressor(objective= 'reg:squarederror',nthread=4,seed=17)
         M = xgb.XGBRegressor(objective ='reg:squarederror', colsample_bytree = 1, learning_rate = reg_params[dataset]['learning_rate'],
         max_depth = reg_params[dataset]['max_depth'], n_estimators = reg_params[dataset]['n_estimators'], verbose = True, random_state=42)
 
     if(model=="SVR"):
-
-        c_val = 1.5 #default C = 1.5
+        c_val = 1.5
         n_iter = 10000
         M = LinearSVR(max_iter=n_iter,C=c_val)
 
-    # run cross val predict with search to get predicition for everyone, with n_cv and n_jobs defined in the reg_params.py script
-    #pred = cross_val_predict(search, x, y, cv=cv_outer, n_jobs=reg_params['n_jobs'])
-    pred = cross_val_predict(M, x_scaled, y, cv=10, n_jobs=reg_params[dataset]['n_jobs'])
-
+    # run cross val predict
+    pred = cross_val_predict(M, x_scaled, y, cv=reg_params[dataset]['n_cv'], n_jobs=reg_params[dataset]['n_jobs'])
 
     #Add predictions to the dataframe
     data_out = x.copy()
@@ -91,7 +82,6 @@ def run_model(dataset,model,shuffle_frac):
 
     #Linear correction for the predicted age
     z = np.polyfit(data_out['Age'], data_out['pred'], 1)
-
     data_out['pred_corr'] = data_out['Age'] + data_out['pred'] - (z[1] +z[0]*data_out['Age'])
 
     #Store the dataframe

@@ -18,5 +18,5 @@ upper_age = {"CamCan": 87,
             }
 
 lower_age = {"CamCan": 18,
-             "UKB": 45 #44.57
+             "UKB": 45
             }

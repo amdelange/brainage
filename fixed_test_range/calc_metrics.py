@@ -44,13 +44,6 @@ def calc_wmae(true, pred, dataset, agerange, age):
 
     return mean_absolute_error(true, pred)/age_range
 
-def calc_mape(true, pred):
-    return mean_absolute_percentage_error(true, pred)
-
-def calc_mape(true, pred):
-    true, pred = np.array(true), np.array(pred)
-    return np.mean(np.abs((true - pred) / true)) * 100
-
 def calc_rse(true, pred):
     rse_numerator = np.sum((true - pred)**2)
     rse_denominator = np.sum((true - true.mean())**2)
@@ -76,9 +69,6 @@ def calc_all(true, pred, dataset, agerange, age):
 
     #Median AE
     median_ae = calc_median_ae(true, pred)
-
-    #MAPE (mean absolute percentage error)
-    #mape = calc_mape(true, pred)
 
     #RSE (relative squared error, how much the prediction errors differ from the standard deviation of the true age)
     rse = calc_rse(true, pred)
@@ -113,11 +103,6 @@ def calc_metrics(dataset, model, agerange, age):
     print(f"Mean age ± STD : {mean_age} ± {std_age}")
     print(f"Mean BAG ± STD : {mean_bag} ± {std_bag}")
 
-    #plt.scatter(data['Age'],data['pred'])
-    #xvals = np.linspace(data['Age'].min(),data['Age'].max(),1000)
-    #plt.plot(xvals,xvals,color='red')
-    #plt.show()
-
     #Store results to a dict in JSON
     metric_dict = {}
 
@@ -129,13 +114,11 @@ def calc_metrics(dataset, model, agerange, age):
         r, r2, rmse, mae, median_ae, rse, rae, wmae = calc_all(data['Age'],data[f'pred{c}'], dataset, agerange, age)
 
         metric_dict[f"r{c}"] = r
-        #metric_dict[f"r_p{c}"] = r_p
         metric_dict[f"r2{c}"] = r2
         metric_dict[f"RMSE{c}"] = rmse
         metric_dict[f"MAE{c}"] = mae
         metric_dict[f"MedianAE{c}"] = median_ae
         metric_dict[f"WMAE{c}"] = wmae
-        #metric_dict[f"MAPE{c}"] = mape
         metric_dict[f"RSE{c}"] = rse
         metric_dict[f"RAE{c}"] = rae
 

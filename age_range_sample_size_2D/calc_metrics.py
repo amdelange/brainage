@@ -72,7 +72,7 @@ def calc_metrics(model):
     file_name = dataset_names[dataset]
 
     #Loop over age range and sample size files and run the model, save the predictions into new dataframe
-    for i in age_lims[dataset]:
+    for i in age_lims["lower"][dataset]:
         for j in downsample_fracs[dataset]:
             print("Lower age range: %s" % i)
             print("Sample fraction: %s" % j)

@@ -26,8 +26,6 @@ def plot(model):
                      'r2': "$R^2$",
                      'RMSE': "RMSE [years]",
                      'MAE': "MAE [years]",
-                     #'RSE': "RSE",
-                     #'RAE': "RAE",
                      }
 
     dataset = "UKB"
@@ -40,7 +38,7 @@ def plot(model):
         y_index = []
         y_label = []
 
-        size_x = len(age_lims[dataset])
+        size_x = len(age_lims["lower"][dataset])
         size_y = len(downsample_fracs[dataset])
 
         vals = np.zeros((size_y, size_x))
@@ -49,10 +47,10 @@ def plot(model):
         #Get values for each age range and sample size
         for i in range(0,size_x):
             x_index.append(size_x-i-1)
-            x_label.append(f"{age_lims[dataset][i]}-{upper_age[dataset]}")
+            x_label.append(f"{age_lims['lower'][dataset][i]}-{upper_age[dataset]}")
             for j in range(0,len(downsample_fracs[dataset])):
 
-                with open(f"../output/{file_name}_lower_age_{age_lims[dataset][i]}_frac_{downsample_fracs[dataset][j]}_metrics{model_name}.json","r") as f:
+                with open(f"../output/{file_name}_lower_age_{age_lims['lower'][dataset][i]}_frac_{downsample_fracs[dataset][j]}_metrics{model_name}.json","r") as f:
                     results_dict = json.load(f)
 
                 vals[j][i] = results_dict[m]

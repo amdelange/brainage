@@ -18,9 +18,6 @@ metric_titles = {'r': "$r$",
                  'r2': "$R^2$",
                  'RMSE': "RMSE [years]",
                  'MAE': "MAE [years]",
-                 #'MAPE': "MAPE",
-                 #'RSE': "RSE",
-                 #'RAE': "RAE"
                  }
 
 dataset_title = {'CamCan': 'Cam-CAN',
@@ -85,8 +82,7 @@ def plot(dataset, model):
         label = ""
         corr_label = ""
         if(ax_i==0):
-            #lab = "data models (N = %.0f)" % results_dict[str(shuffle_fracs[dataset][-1])]["n"]
-            lab = "data models (N = 41,285)"
+            lab = "data models (N = %.0f)" % results_dict[str(shuffle_fracs[dataset][-1])]["n"]
             label = "Shuffled "+lab
             corr_label = "Corr. shuffled "+lab
         #Reverse values
@@ -103,8 +99,7 @@ def plot(dataset, model):
         line_label = ""
         corr_line_label = ""
         if(ax_i==0):
-            line_lab = "model (N = 41,285)"
-            #line_lab = "model (N = %.0f)" % results_dict["none"]["n"]
+            line_lab = "model (N = %.0f)" % results_dict["none"]["n"]
             line_label = "Full "+line_lab
             corr_line_label = "Corr. full "+line_lab
         ax[ax_i].axhline(results_dict["none"][m],color="k",alpha=0.5,linestyle='--',linewidth=2.5,label=line_label)
@@ -116,7 +111,6 @@ def plot(dataset, model):
         ax[ax_i].set_xticks(x_index)
         ax[ax_i].set_xticklabels(x_labels)
         ax[ax_i].set_ylabel(metric_titles[m],fontsize=44)
-        #ax[ax_i].set_xlabel("Shuffle fraction",fontsize=44)
         ax[ax_i].tick_params(axis='both', which='major', labelsize=34,pad=10)
         ylow, yhigh = ax[ax_i].get_ylim()
         ax[ax_i].set_ylim(0.8*ylow,1.2*yhigh)

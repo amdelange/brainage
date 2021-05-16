@@ -14,14 +14,14 @@ from matplotlib import rc
 rc('font',**{'family':'serif','serif':['Roman']})
 rc('text', usetex=True)
 
-metric_titles = {#'r': "$r$",
-                 #'r2': "$R^2$",
-                 #'RMSE': "RMSE [years]",
-                 #'MAE': "MAE [years]",
-                 'MedianAE': "Median AE",
-                 "WMAE" : "$_{W}$MAE",
-                 'RSE': "RSE",
-                 'RAE': "RAE"
+metric_titles = {'r': "$r$",
+                 'r2': "$R^2$",
+                 'RMSE': "RMSE [years]",
+                 'MAE': "MAE [years]",
+                 #'MedianAE': "Median AE",
+                 #"WMAE" : "$_{W}$MAE",
+                 #'RSE': "RSE",
+                 #'RAE': "RAE"
                  }
 
 dataset_title = {'CamCan': 'Cam-CAN',
@@ -64,7 +64,6 @@ def plot(dataset,model,agerange,corr):
             results_dict[a] = json.load(f)
 
     #Loop over metrics
-    #fig, ax = plt.subplots(4,2, figsize=(20,20))
     fig, ax = plt.subplots(2,2, figsize=(18,16))
     ax = ax.ravel()
 
@@ -94,9 +93,7 @@ def plot(dataset,model,agerange,corr):
         label = ""
         corr_label = ""
         if(ax_i==0):
-            #lab = "models (N = %.0f)" % results_dict[str(age_lims[agerange][dataset][-1])]["n"]
-            lab = "models (N = 20,043)" #lower
-            # upper #lab = "models (N = 12,796)"
+            lab = "models (N = %.0f)" % results_dict[str(age_lims[agerange][dataset][-1])]["n"]
             label = "Age range "+lab
             corr_label = "Corr. age range "+lab
         #Reverse values

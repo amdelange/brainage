@@ -70,6 +70,7 @@ def run_model(dataset, model, agerange, age):
         x_B = x_B.drop('Age',1)
         x_B = x_B.drop('ID',1)
         x_B = x_B.drop('Sex',1)
+
     if(dataset=="UKB"):
         x = x.drop("Age",1)
         x = x.drop("eid",1)
@@ -78,10 +79,6 @@ def run_model(dataset, model, agerange, age):
         x_B = x_B.drop("Age",1)
         x_B = x_B.drop("eid",1)
         x_B = x_B.drop("Sex_cat",1)
-
-    # configure the cross-validation procedure
-    cv_inner = KFold(n_splits=5, shuffle=True, random_state=42)
-    cv_outer = KFold(n_splits=10, shuffle=True, random_state=42)
 
     # Scaling using inter-quartile range
     scaler = RobustScaler()
@@ -96,60 +93,9 @@ def run_model(dataset, model, agerange, age):
         M = xgb.XGBRegressor(objective ='reg:squarederror', colsample_bytree = 1, learning_rate = reg_params[dataset]['learning_rate'],
         max_depth = reg_params[dataset]['max_depth'], n_estimators = reg_params[dataset]['n_estimators'], verbose = True, random_state=42)
 
-        '''
-        # define search space
-        parameters = {'max_depth': range (2, 10, 1),
-                    'n_estimators': range(60, 220, 40),
-                    'learning_rate': [0.1, 0.01, 0.05]}
-
-        # define search
-        search = RandomizedSearchCV(
-            estimator=M,
-            param_distributions=parameters,
-            scoring = 'neg_root_mean_squared_error',
-            n_jobs = 4,
-            cv = 5,
-            refit=True)
-
-    result = search.fit(x, y)
-    # get the best performing model fit
-    best_model = result.best_estimator_
-    print (best_model)
-
-    best_params = result.best_params_
-    print (best_params)
-    '''
-
-
+    
     if(model=="SVR"):
-
-
         M = LinearSVR(max_iter=10000,C=1.5)
-        #M = EMRVR(kernel='linear', threshold_alpha=1e9)
-
-        '''
-        parameters = {'C': [2 ** -7, 2 ** -5, 2 ** -3, 2 ** -1, 2 ** 0, 2 ** 1, 2 ** 3, 2 ** 5, 2 ** 7]}
-        search = RandomizedSearchCV(
-            estimator=M,
-            param_distributions=parameters,
-            scoring = 'neg_root_mean_squared_error',
-            n_jobs = 4,
-            cv = 5,
-            refit=True)
-
-    result = search.fit(x, y)
-    # get the best performing model fit
-    best_model = result.best_estimator_
-    print (best_model)
-
-    best_params = result.best_params_
-    print (best_params)
-
-
-    '''
-    # run cross val predict with search to get predicition for everyone, with n_cv and n_jobs defined in the reg_params.py script
-    #pred = cross_val_predict(search, x, y, cv=cv_outer, n_jobs=reg_params['n_jobs'])
-    #pred = cross_val_predict(M, x, y, cv=10, n_jobs=reg_params[dataset]['n_jobs'])
 
     M.fit(x, y)
 
