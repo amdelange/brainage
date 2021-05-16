@@ -33,7 +33,7 @@ def run_model(dataset, model, agerange, age):
 
     data_A, data_B = train_test_split(data, test_size = 0.5, random_state=100)
 
-    #Apply age cut to test data_B
+    #Apply an age cut to test data_B
     cut_direction = ""
     if(agerange == "lower"):
         cut_direction = ">="
