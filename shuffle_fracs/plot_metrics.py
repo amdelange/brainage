@@ -112,6 +112,7 @@ def plot(dataset, model):
         ax[ax_i].set_xticklabels(x_labels)
         ax[ax_i].set_ylabel(metric_titles[m],fontsize=44)
         ax[ax_i].tick_params(axis='both', which='major', labelsize=34,pad=10)
+        ax[ax_i].grid(which='major', axis='y', linestyle='-')
         ylow, yhigh = ax[ax_i].get_ylim()
         ax[ax_i].set_ylim(0.8*ylow,1.2*yhigh)
         ax_i += 1

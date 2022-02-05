@@ -75,10 +75,12 @@ def run_model(dataset, model, agerange, age):
         x = x.drop("Age",1)
         x = x.drop("eid",1)
         x = x.drop("Sex_cat",1)
+        x = x.drop('Scanner_cat',1)
 
         x_B = x_B.drop("Age",1)
         x_B = x_B.drop("eid",1)
         x_B = x_B.drop("Sex_cat",1)
+        x_B = x_B.drop('Scanner_cat',1)
 
     # Scaling using inter-quartile range
     scaler = RobustScaler()
@@ -89,13 +91,12 @@ def run_model(dataset, model, agerange, age):
     # define the model
     if(model == "XGB"):
 
-        #xg_reg = xgb.XGBRegressor(objective= 'reg:squarederror',nthread=4,seed=17)
         M = xgb.XGBRegressor(objective ='reg:squarederror', colsample_bytree = 1, learning_rate = reg_params[dataset]['learning_rate'],
         max_depth = reg_params[dataset]['max_depth'], n_estimators = reg_params[dataset]['n_estimators'], verbose = True, random_state=42)
 
-    
+
     if(model=="SVR"):
-        M = LinearSVR(max_iter=10000,C=1.5)
+        M = LinearSVR(max_iter=10000,C=reg_params[dataset]['C'])
 
     M.fit(x, y)
 

@@ -46,6 +46,7 @@ def run_model(dataset,model,shuffle_frac):
         x = x.drop("Age",1)
         x = x.drop("eid",1)
         x = x.drop("Sex_cat",1)
+        x = x.drop('Scanner_cat',1)
 
 
     #Shuffle required subset of the data
@@ -61,18 +62,20 @@ def run_model(dataset,model,shuffle_frac):
     x_scaled = scaler.fit_transform(x)
 
 
-    # define model
+    # define the model
     if(model=="XGB"):
+        # define the model
+        #xg_reg = xgb.XGBRegressor(objective= 'reg:squarederror',nthread=4,seed=17)
         M = xgb.XGBRegressor(objective ='reg:squarederror', colsample_bytree = 1, learning_rate = reg_params[dataset]['learning_rate'],
         max_depth = reg_params[dataset]['max_depth'], n_estimators = reg_params[dataset]['n_estimators'], verbose = True, random_state=42)
 
     if(model=="SVR"):
-        c_val = 1.5
-        n_iter = 10000
-        M = LinearSVR(max_iter=n_iter,C=c_val)
 
-    # run cross val predict
-    pred = cross_val_predict(M, x_scaled, y, cv=reg_params[dataset]['n_cv'], n_jobs=reg_params[dataset]['n_jobs'])
+        n_iter = 10000
+        M = LinearSVR(max_iter=n_iter,C=reg_params[dataset]['C'])
+
+    pred = cross_val_predict(M, x_scaled, y, cv=reg_params['n_cv'], n_jobs=reg_params[dataset]['n_jobs'])
+
 
     #Add predictions to the dataframe
     data_out = x.copy()
@@ -82,6 +85,7 @@ def run_model(dataset,model,shuffle_frac):
 
     #Linear correction for the predicted age
     z = np.polyfit(data_out['Age'], data_out['pred'], 1)
+
     data_out['pred_corr'] = data_out['Age'] + data_out['pred'] - (z[1] +z[0]*data_out['Age'])
 
     #Store the dataframe

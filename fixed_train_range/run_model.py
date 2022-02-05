@@ -76,14 +76,13 @@ def run_model(dataset, model, agerange, age):
         x = x.drop("Age",1)
         x = x.drop("eid",1)
         x = x.drop("Sex_cat",1)
+        x = x.drop('Scanner_cat',1)
 
         x_B = x_B.drop("Age",1)
         x_B = x_B.drop("eid",1)
         x_B = x_B.drop("Sex_cat",1)
+        x_B = x_B.drop('Scanner_cat',1)
 
-    # configure the cross-validation procedure
-    cv_inner = KFold(n_splits=5, shuffle=True, random_state=42)
-    cv_outer = KFold(n_splits=10, shuffle=True, random_state=42)
 
     # Scaling using inter-quartile range
     scaler = RobustScaler()
@@ -97,7 +96,7 @@ def run_model(dataset, model, agerange, age):
         max_depth = reg_params[dataset]['max_depth'], n_estimators = reg_params[dataset]['n_estimators'], verbose = True, random_state=42)
 
     if(model=="SVR"):
-        M = LinearSVR(max_iter=10000,C=1.5)
+        M = LinearSVR(max_iter=10000,C=reg_params[dataset]['C'])
 
 
     M.fit(x, y)
@@ -126,7 +125,7 @@ def run_model(dataset, model, agerange, age):
 
 
     #Get predicitons for training sample, in order to get summary stats e.t.c.
-    pred_A = cross_val_predict(M, x, y, cv=10, n_jobs=reg_params[dataset]['n_jobs'])
+    pred_A = cross_val_predict(M, x, y, cv=reg_params['n_cv'], n_jobs=reg_params[dataset]['n_jobs'])
 
     #Add predictions to the training dataframe
     data_A['pred'] = pred_A
